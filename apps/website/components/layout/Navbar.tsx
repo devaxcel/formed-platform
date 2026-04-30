@@ -160,7 +160,7 @@ export default function Navbar() {
           ))}
           <div className="mt-6">
   <Link
-    href="https://formed-portal.vercel.app"
+    href="https://my.formed.fit/"
     target="_blank"
     rel="noopener noreferrer"
     onClick={() => setOpen(false)}
