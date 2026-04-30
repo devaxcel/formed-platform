@@ -70,7 +70,7 @@ export default function Navbar() {
 <div className="hidden lg:flex items-center gap-4">
   {/* Login Button */}
   <Link
-    href="https://formed-portal.vercel.app"
+    href="https://my.formed.fit/"
     target="_blank"
     rel="noopener noreferrer"
     className={cn(
