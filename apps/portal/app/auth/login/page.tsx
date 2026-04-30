@@ -8,7 +8,17 @@ export default function LoginPage() {
     <div className="min-h-screen bg-ink flex">
       {/* Left panel */}
       <div className="hidden lg:flex flex-col justify-between w-1/2 p-14 border-r border-cream/10">
-        <p className="font-display text-cream text-xl font-light tracking-wide">FORMED</p>
+        <a
+  href="https://www.formed.fit"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  <img
+    src="/images/Logo-dark.png"
+    alt="FORMED Logo"
+    className="h-8 w-auto object-contain"
+  />
+</a>
         <div>
           <p className="font-display text-5xl font-light text-cream leading-tight mb-4">
             Welcome back.
