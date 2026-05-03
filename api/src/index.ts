@@ -60,7 +60,7 @@ app.get("/health", (req, res) => {
 });
 
 // Temporary SMTP test route — remove after testing
-app.get("/test-email", async (req, res) => {
+app.get("/testing-email", async (req, res) => {
   try {
     const { sendEmail } = await import("./lib/email");
     const result = await sendEmail(
