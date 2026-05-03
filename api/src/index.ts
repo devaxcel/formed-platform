@@ -60,92 +60,101 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Temporary SMTP test route — remove after testing
+// Temporary email test route — remove after testing
 app.get("/testing-email", async (req, res) => {
+  const startTime = Date.now();
+  
   try {
-    const { sendEmail } = await import("./lib/email");
+    const { sendEmail, FROM } = await import("./lib/email");
+    
+    console.log("📧 Testing email configuration...");
+    console.log("   FROM:", FROM);
+    console.log("   TO:", process.env.ADMIN_EMAIL);
+    console.log("   Has API Key:", !!process.env.RESEND_API_KEY);
+    
     const result = await sendEmail(
       process.env.ADMIN_EMAIL ?? "test@test.com",
-      "FORMED SMTP Test",
-      "<h1>SMTP is working</h1><p>If you see this, email is configured correctly.</p>"
+      "FORMED Email Test",
+      `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: #4F46E5; color: white; padding: 20px; text-align: center; }
+          .content { padding: 20px; background: #f9fafb; }
+          .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
+          .success { color: #10b981; font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>FORMED Platform</h1>
+          </div>
+          <div class="content">
+            <h2 class="success">✅ Email Configuration Test</h2>
+            <p>Your Resend integration is working correctly!</p>
+            <p><strong>Test Time:</strong> ${new Date().toLocaleString()}</p>
+            <p><strong>Environment:</strong> ${process.env.NODE_ENV || 'development'}</p>
+            <p><strong>From Address:</strong> ${process.env.EMAIL_FROM || 'onboarding@resend.dev'}</p>
+          </div>
+          <div class="footer">
+            <p>This is an automated test from the FORMED API</p>
+          </div>
+        </div>
+      </body>
+      </html>
+      `
     );
+    
+    const duration = Date.now() - startTime;
+    
     res.json({ 
       success: result,
-      smtpHost: process.env.SMTP_HOST,
-      smtpUser: process.env.SMTP_USER,
-      smtpPort: process.env.SMTP_PORT,
-      from: process.env.EMAIL_FROM
+      method: "Resend API (HTTP)",
+      from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
+      to: process.env.ADMIN_EMAIL,
+      configuration: {
+        hasResendKey: !!process.env.RESEND_API_KEY,
+        hasFromAddress: !!process.env.EMAIL_FROM,
+        hasFromName: !!process.env.EMAIL_FROM_NAME,
+        nodeEnv: process.env.NODE_ENV,
+      },
+      performance: {
+        duration_ms: duration,
+        timestamp: new Date().toISOString()
+      }
     });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    const duration = Date.now() - startTime;
+    console.error("Test endpoint error:", err);
+    
+    res.status(500).json({ 
+      success: false,
+      error: err.message,
+      method: "Resend API (HTTP)",
+      configuration: {
+        hasResendKey: !!process.env.RESEND_API_KEY,
+        hasFromAddress: !!process.env.EMAIL_FROM,
+        nodeEnv: process.env.NODE_ENV,
+      },
+      performance: {
+        duration_ms: duration,
+        timestamp: new Date().toISOString()
+      },
+      troubleshooting: [
+        "Check that RESEND_API_KEY is set in Railway environment variables",
+        "Verify EMAIL_FROM is set to 'onboarding@resend.dev' or a verified domain",
+        "Ensure you have email credits available in Resend dashboard",
+        "Check Railway logs for detailed error messages"
+      ]
+    });
   }
 });
 
-// NEW: Test which SMTP ports are accessible from Railway
-app.get("/test-smtp-ports", async (req, res) => {
-  const smtpHost = process.env.SMTP_HOST || "smtp.gmail.com";
-  const ports = [25, 465, 587, 2525, 1025];
-  const results: Record<string, any> = {};
-  
-  console.log(`🔍 Testing SMTP ports for host: ${smtpHost}`);
-  
-  for (const port of ports) {
-    results[port] = await new Promise((resolve) => {
-      const socket = new net.Socket();
-      const timeout = 8000; // 8 second timeout
-      
-      socket.setTimeout(timeout);
-      
-      const startTime = Date.now();
-      
-      socket.connect(port, smtpHost, () => {
-        const duration = Date.now() - startTime;
-        resolve({ 
-          status: "open", 
-          latency: `${duration}ms`,
-          message: `Successfully connected to ${smtpHost}:${port}`
-        });
-        socket.destroy();
-      });
-      
-      socket.on('error', (err: any) => {
-        resolve({ 
-          status: "blocked", 
-          error: err.code || err.message,
-          message: `Cannot connect to ${smtpHost}:${port} - ${err.code || err.message}`
-        });
-        socket.destroy();
-      });
-      
-      socket.on('timeout', () => {
-        resolve({ 
-          status: "timeout", 
-          error: "Connection timeout",
-          message: `Connection to ${smtpHost}:${port} timed out after ${timeout}ms`
-        });
-        socket.destroy();
-      });
-    });
-  }
-  
-  // Also test with current SMTP settings if they exist
-  const currentConfig = {
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    secure: process.env.SMTP_SECURE === 'true',
-    user: process.env.SMTP_USER,
-    hasPassword: !!process.env.SMTP_PASS,
-  };
-  
-  res.json({
-    timestamp: new Date().toISOString(),
-    smtpHost: smtpHost,
-    environment: process.env.NODE_ENV || "development",
-    portTestResults: results,
-    currentSmtpConfig: currentConfig,
-    recommendation: getRecommendation(results, currentConfig)
-  });
-});
+
 
 // Helper function to provide recommendations based on port test results
 function getRecommendation(portResults: Record<string, any>, currentConfig: any): string {
