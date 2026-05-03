@@ -50,6 +50,7 @@ app.use("/api/payments",     paymentRoutes);
 app.use("/api/tickets",      ticketRoutes);
 app.use("/api/notifications", notificationRoutes); 
 app.use("/api/applications", applicationRoutes);
+
 app.get("/health", (req, res) => {
   res.json({
     status:    "ok",
@@ -58,6 +59,28 @@ app.get("/health", (req, res) => {
   });
 });
 
+// Temporary SMTP test route — remove after testing
+app.get("/test-email", async (req, res) => {
+  try {
+    const { sendEmail } = await import("./lib/email");
+    const result = await sendEmail(
+      process.env.ADMIN_EMAIL ?? "test@test.com",
+      "FORMED SMTP Test",
+      "<h1>SMTP is working</h1><p>If you see this, email is configured correctly.</p>"
+    );
+    res.json({ 
+      success: result,
+      smtpHost: process.env.SMTP_HOST,
+      smtpUser: process.env.SMTP_USER,
+      smtpPort: process.env.SMTP_PORT,
+      from: process.env.EMAIL_FROM
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ⚠️ 404 handler MUST be LAST - catches any unmatched routes
 app.use((req, res) => {
   res.status(404).json({ error: `Route ${req.method} ${req.path} not found` });
 });
@@ -88,26 +111,7 @@ if (process.env.NODE_ENV !== "production") {
     await runComplianceCheck();
   }, 5000);
 }
-// Temporary SMTP test route — remove after testing
-app.get("/test-email", async (req, res) => {
-  try {
-    const { sendEmail } = await import("./lib/email");
-    const result = await sendEmail(
-      process.env.ADMIN_EMAIL ?? "test@test.com",
-      "FORMED SMTP Test",
-      "<h1>SMTP is working</h1><p>If you see this, email is configured correctly.</p>"
-    );
-    res.json({ 
-      success: result,
-      smtpHost: process.env.SMTP_HOST,
-      smtpUser: process.env.SMTP_USER,
-      smtpPort: process.env.SMTP_PORT,
-      from: process.env.EMAIL_FROM
-    });
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
-});
+
 app.listen(PORT, () => {
   console.log(`FORMED API running on http://localhost:${PORT}`);
 });
