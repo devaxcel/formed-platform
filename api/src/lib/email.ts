@@ -1,50 +1,42 @@
-import nodemailer from 'nodemailer';
+import { Resend } from "resend";
 import dotenv from "dotenv";
 dotenv.config();
 
-// SMTP client (primary - only use this)
-let smtpTransporter: any = null;
-
-if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-  smtpTransporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: process.env.SMTP_SECURE === 'true',
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
-  console.log('✅ SMTP configured and ready');
-} else {
-  console.log('⚠️ SMTP not configured. Email sending will fail.');
-}
+export const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const FROM = `${process.env.EMAIL_FROM_NAME ?? "FORMED"} <${process.env.EMAIL_FROM ?? "notifications@formed.fit"}>`;
 
-// Main send function - SMTP only (no Resend fallback)
+// Main send function using Resend API
 export async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
-  console.log(`\n📧 SENDING EMAIL:`);
+  console.log(`\n📧 SENDING EMAIL via Resend:`);
   console.log(`   To: ${to}`);
   console.log(`   Subject: ${subject}`);
+  console.log(`   From: ${FROM}`);
   
-  // Only use SMTP
-  if (smtpTransporter) {
-    try {
-      const info = await smtpTransporter.sendMail({
-        from: FROM,
-        to,
-        subject,
-        html,
-      });
-      console.log(`✅ Email sent via SMTP to ${to}: ${subject}`);
-      return true;
-    } catch (smtpError: any) {
-      console.error(`❌ SMTP failed for ${to}:`, smtpError.message);
-      return false;
-    }
+  if (!process.env.RESEND_API_KEY) {
+    console.error(`❌ RESEND_API_KEY is not set in environment variables`);
+    return false;
   }
 
-  console.error(`❌ SMTP not configured. Cannot send to ${to}`);
-  return false;
+  try {
+    const { data, error } = await resend.emails.send({
+      from: FROM,
+      to: [to],
+      subject,
+      html,
+    });
+
+    if (error) {
+      console.error(`❌ Resend API error:`, error);
+      return false;
+    }
+
+    console.log(`✅ Email sent successfully via Resend`);
+    console.log(`   Message ID: ${data?.id}`);
+    console.log(`   View in Resend: https://resend.com/emails/${data?.id}`);
+    return true;
+  } catch (error: any) {
+    console.error(`❌ Failed to send email:`, error.message);
+    return false;
+  }
 }
