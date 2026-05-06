@@ -35,7 +35,7 @@ export default function ChargeSessionButton({
 
     try {
       const res = await fetch(
-        `http://localhost:4000/api/payments/charge-session`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/payments/charge-session`,
         {
           method:  "POST",
           headers: {
