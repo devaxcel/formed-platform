@@ -64,29 +64,35 @@ export default function MatchingEngine({ clients, trainers }: Props) {
     .slice(0, 3);
 
   const handleAssign = async (trainerId: string) => {
-    if (!selected) return;
-    setAssigning(trainerId);
+  if (!selected) return;
+  setAssigning(trainerId);
 
-    const compatScore = recommendations.find(r => r.id === trainerId)?.score ?? 0;
-
-    await supabase.from("matches").insert({
-      client_id:           selected,
-      trainer_id:          trainerId,
+  const compatScore = recommendations.find(r => r.id === trainerId)?.score ?? 0;
+  
+  // ✅ Call your backend API instead of direct Supabase
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://formed-platform-production.up.railway.app";
+  
+  const response = await fetch(`${API_URL}/api/matching/assign`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+    },
+    body: JSON.stringify({
+      client_id: selected,
+      trainer_id: trainerId,
       compatibility_score: compatScore,
-      assigned_by:         (await supabase.auth.getUser()).data.user?.id,
-    });
+      notes: null,
+    }),
+  });
 
-    await supabase.from("clients").update({
-      assigned_trainer_id: trainerId,
-      status:              "active",
-    }).eq("id", selected);
-
-    await supabase.rpc("increment_trainer_client_count", { trainer_id: trainerId });
-
+  if (response.ok) {
     setAssigned(prev => new Set([...prev, selected]));
-    setAssigning(null);
     router.refresh();
-  };
+  }
+  
+  setAssigning(null);
+};
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
