@@ -25,7 +25,7 @@ export default function RefundButton({ paymentId, amount }: RefundButtonProps) {
     const token = session?.access_token;
 
     const res = await fetch(
-      `http://localhost:4000/api/payments/refund`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/payments/refund`,
       {
         method:  "POST",
         headers: {
