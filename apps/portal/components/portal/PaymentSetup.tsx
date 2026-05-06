@@ -37,55 +37,24 @@ function SetupForm({ clientId, onSuccess }: { clientId: string; onSuccess: () =>
   const [clientSecret,  setClientSecret]  = useState("");
 
   useEffect(() => {
-   const fetchSecret = async () => {
-  const { data: { session } } = await supabase.auth.getSession();
-  const token = session?.access_token;
-  
-  console.log('=== DEBUG INFO ===');
-  console.log('Session exists:', !!session);
-  console.log('Token exists:', !!token);
-  console.log('User email:', session?.user?.email);
-  console.log('Token value:', token ? token.substring(0, 50) + '...' : 'null');
-  
-  if (!token) {
-    console.error('No token found! User may not be logged in.');
-    setError('Please log in again');
-    return;
-  }
+    const fetchSecret = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
 
-  try {
-    const response = await fetch('http://localhost:4000/api/payments/setup-intent', {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
-    });
-    
-    console.log('Response status:', response.status);
-    
-    // Check if response is JSON
-    const contentType = response.headers.get('content-type');
-    console.log('Content-Type:', contentType);
-    
-    if (contentType && contentType.includes('application/json')) {
-      const data = await response.json();
-      console.log('Response data:', data);
-      if (data.client_secret) {
-        setClientSecret(data.client_secret);
-      } else if (data.error) {
-        setError(data.error);
-      }
-    } else {
-      const text = await response.text();
-      console.log('Non-JSON response:', text.substring(0, 200));
-      setError('Server error. Please try again.');
-    }
-  } catch (err) {
-    console.error('Fetch error:', err);
-    setError('Failed to connect to payment service');
-  }
-};
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/payments/setup-intent`,
+        {
+          method:  "POST",
+          headers: {
+            "Content-Type":  "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+      if (data.client_secret) setClientSecret(data.client_secret);
+    };
 
     fetchSecret();
   }, []);
