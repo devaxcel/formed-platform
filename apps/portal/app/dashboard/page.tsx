@@ -63,10 +63,16 @@ export default async function DashboardPage() {
   const onboardingComplete = completedSteps === 5;
 
   const nextSession = upcomingSessions?.[0];
-  const hour = new Date().getHours();
-  const greeting =
-    hour < 12 ? "Good morning" :
-    hour < 17 ? "Good afternoon" : "Good evening";
+  const hourET = parseInt(
+  new Date().toLocaleString("en-US", {
+    timeZone: "America/New_York",
+    hour: "numeric",
+    hour12: false,
+  })
+);
+const greeting =
+  hourET < 12 ? "Good morning" :
+  hourET < 17 ? "Good afternoon" : "Good evening";
   const firstName = client?.full_name?.split(" ")[0] ?? "there";
 
   return (
