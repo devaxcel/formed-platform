@@ -70,6 +70,7 @@ const steps = [
   },
 ];
 
+
 // Document Viewer Modal Component
 function DocumentViewer({ 
   title, 
@@ -96,7 +97,9 @@ function DocumentViewer({
     if (bottom) setHasScrolledToBottom(true);
   };
 
-  const canAccept = hasScrolledToBottom && checkboxChecked && legalName.trim().length > 0;
+  // For Billing Authorization, skip scroll requirement since content is short
+  const requiresScroll = title !== "Billing Authorization";
+  const canAccept = checkboxChecked && legalName.trim().length > 0 && (!requiresScroll || hasScrolledToBottom);
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
@@ -107,7 +110,7 @@ function DocumentViewer({
         </div>
         <div 
           className="flex-1 overflow-y-auto p-6 text-sm font-body leading-relaxed space-y-4"
-          onScroll={handleScroll}
+          onScroll={requiresScroll ? handleScroll : undefined}
         >
           <div dangerouslySetInnerHTML={{ __html: content }} />
         </div>
@@ -131,7 +134,7 @@ function DocumentViewer({
           <button
             onClick={onAccept}
             disabled={!canAccept}
-            className="w-full bg-ink text-cream text-xs tracking-widest uppercase font-body py-3 hover:bg-accent transition-colors disabled:opacity-50"
+            className="w-full bg-ink text-cream text-xs tracking-widest uppercase font-body py-3 hover:bg-accent transition-colors disabled:opacity-50 disabled:bg-stone disabled:cursor-not-allowed"
           >
             Accept & Continue
           </button>
