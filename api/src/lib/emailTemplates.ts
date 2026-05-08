@@ -93,33 +93,35 @@ export function clientRejected(name: string): string {
 export function clientPaymentConfirmed(
   name: string,
   amount: number,
-  sessionDate: string,
-  portalUrl: string
+  membershipPlan: string,
+  date: string,
 ): string {
   return base(`
-    <h1>Payment confirmed.</h1>
+    <h1>Payment Confirmed</h1>
     <p>Hi ${name},</p>
-    <p>Your payment has been received and your session is confirmed.</p>
-    <div class="highlight">
-      <div class="row"><span class="row-label">Amount</span><span class="row-value">$${amount.toFixed(2)}</span></div>
-      <div class="row"><span class="row-label">Session</span><span class="row-value">${sessionDate}</span></div>
-      <div class="row"><span class="row-label">Status</span><span class="row-value">Confirmed</span></div>
-    </div>
-    <a href="${portalUrl}/dashboard/sessions" class="btn">View My Sessions</a>
-  `, `Payment of $${amount.toFixed(2)} confirmed.`);
+    <p>Your FORMED membership payment has been processed successfully.</p>
+    <p><strong>Payment Summary:</strong></p>
+    <ul>
+      <li><strong>Membership:</strong> ${membershipPlan}</li>
+      <li><strong>Amount:</strong> $${amount.toFixed(2)}</li>
+      <li><strong>Date:</strong> ${date}</li>
+    </ul>
+    <p>Thank you for training with FORMED.</p>
+    <p>— FORMED Billing</p>
+  `, `Payment Confirmed`);
 }
 
-export function clientPaymentFailed(name: string, portalUrl: string): string {
+export function clientPaymentFailed(name: string, billingLink: string): string {
   return base(`
-    <h1>Payment failed.</h1>
+    <h1>Action Required: Payment Could Not Be Processed</h1>
     <p>Hi ${name},</p>
-    <p>We were unable to process your payment. This can happen if your card was declined or your payment method needs to be updated.</p>
-    <div class="highlight">
-      <p style="margin:0;color:#0C0C0B;">Please update your payment method in the client portal to keep your sessions confirmed.</p>
-    </div>
-    <a href="${portalUrl}/dashboard/billing" class="btn">Update Payment</a>
-    <p style="margin-top:16px;">If you need help, contact us at <a href="mailto:hello@formed.fit" style="color:#0C0C0B;">hello@formed.fit</a></p>
-  `, "Action required: Your payment could not be processed.");
+    <p>We were unable to process your recent FORMED membership payment.</p>
+    <p>Please update your payment method to avoid interruptions to your membership and session scheduling.</p>
+    <p>Update billing here:<br>
+    <a href="${billingLink}" style="color:#0C0C0B;">${billingLink}</a></p>
+    <p>If you need assistance, contact us at <a href="mailto:hello@formed.fit" style="color:#0C0C0B;">hello@formed.fit</a>.</p>
+    <p>— FORMED Billing</p>
+  `, "Action Required: Payment Could Not Be Processed");
 }
 
 export function clientOnboardingReminder(name: string, portalUrl: string, stepsRemaining: number): string {
@@ -159,24 +161,20 @@ export function clientTrainerMatched(
 export function clientSessionReminder(
   name: string,
   trainerName: string,
-  sessionDate: string,
   sessionTime: string,
-  location: string,
-  portalUrl: string
 ): string {
   return base(`
-    <h1>Session tomorrow.</h1>
+    <h1>Reminder: Your FORMED Session Is Tomorrow</h1>
     <p>Hi ${name},</p>
-    <p>A reminder that you have a training session tomorrow with ${trainerName}.</p>
-    <div class="highlight">
-      <div class="row"><span class="row-label">Date</span><span class="row-value">${sessionDate}</span></div>
-      <div class="row"><span class="row-label">Time</span><span class="row-value">${sessionTime}</span></div>
-      <div class="row"><span class="row-label">Location</span><span class="row-value">${location}</span></div>
-      <div class="row"><span class="row-label">Trainer</span><span class="row-value">${trainerName}</span></div>
-    </div>
-    <p>Need to reschedule? Submit a request at least <strong>24 hours in advance</strong> through your portal.</p>
-    <a href="${portalUrl}/dashboard/sessions" class="btn">View Session</a>
-  `, `Reminder: Session with ${trainerName} tomorrow at ${sessionTime}.`);
+    <p>This is a reminder that you have a FORMED session scheduled tomorrow.</p>
+    <p><strong>Session Details:</strong></p>
+    <ul>
+      <li><strong>Trainer:</strong> ${trainerName}</li>
+      <li><strong>Time:</strong> ${sessionTime}</li>
+    </ul>
+    <p>Stay consistent. We'll see you tomorrow.</p>
+    <p>— FORMED</p>
+  `, `Reminder: Your FORMED Session Is Tomorrow`);
 }
 
 export function clientSessionCancelled(
@@ -210,37 +208,61 @@ export function clientMembershipPauseConfirmed(name: string, portalUrl: string):
 
 export function clientProgressReviewReady(name: string, portalUrl: string): string {
   return base(`
-    <h1>Monthly progress update.</h1>
+    <h1>Time For Your Monthly Progress Check-In</h1>
     <p>Hi ${name},</p>
-    <p>Your trainer has submitted your monthly progress review. See your wins, what to improve, and your programme for next month.</p>
-    <a href="${portalUrl}/dashboard/progress" class="btn">View Progress</a>
-  `, "Your monthly progress review is ready.");
+    <p>It's time for your monthly FORMED progress review.</p>
+    <p>Please log into your portal to:</p>
+    <ul>
+      <li>Upload updated progress photos</li>
+      <li>Update measurements</li>
+      <li>Review your trainer feedback</li>
+      <li>Track your results</li>
+    </ul>
+    <p>Consistency creates results.</p>
+    <p>Access your portal here:<br>
+    <a href="${portalUrl}" style="color:#0C0C0B;">${portalUrl}</a></p>
+    <p>— FORMED</p>
+  `, "Time For Your Monthly Progress Check-In");
 }
 
 // ─── TRAINER EMAILS ───────────────────────────────────────────────────────────
 
 export function trainerApplicationReceived(name: string): string {
   return base(`
-    <h1>Application received.</h1>
+    <h1>We Received Your FORMED Trainer Application</h1>
     <p>Hi ${name},</p>
-    <p>Thank you for applying to join FORMED. We review all trainer applications personally and will follow up within <strong>48 hours</strong>.</p>
-    <div class="highlight">
-      <p style="margin:0;color:#0C0C0B;">We'll review your certifications, experience, and availability before getting back to you.</p>
-    </div>
-    <p>Questions? Contact us at <a href="mailto:hello@formed.fit" style="color:#0C0C0B;">hello@formed.fit</a></p>
+    <p>Thank you for applying to become a FORMED trainer.</p>
+    <p>We're currently reviewing your application and experience. If selected, a member of our team will contact you regarding next steps and the interview process.</p>
+    <p>At FORMED, we focus on delivering a premium client experience through professionalism, accountability, and personalized coaching.</p>
+    <p>We appreciate your interest in joining the brand.</p>
+    <p>— FORMED Recruiting<br>
+    <a href="mailto:hello@formed.fit" style="color:#0C0C0B;">hello@formed.fit</a></p>
   `, "We received your FORMED trainer application.");
 }
 
-export function trainerApproved(name: string, portalUrl: string): string {
+export function trainerApproved(name: string, portalUrl: string, email: string, temporaryPassword: string): string {
   return base(`
-    <h1>Welcome to FORMED.</h1>
+    <h1>Welcome to FORMED</h1>
     <p>Hi ${name},</p>
-    <p>Congratulations — your trainer application has been approved. Complete your onboarding to become active on the platform.</p>
-    <div class="highlight">
-      <p style="margin:0;color:#0C0C0B;">Next step: Complete the FORMED onboarding programme to unlock client assignments.</p>
-    </div>
-    <a href="${portalUrl}/trainer/onboarding" class="btn">Start Onboarding</a>
-  `, "Your FORMED trainer application has been approved.");
+    <p>Congratulations — your FORMED trainer application has been approved.</p>
+    <p>Your trainer portal is now ready.</p>
+    <p>Access your trainer portal here:<br>
+    <a href="${portalUrl}" style="color:#0C0C0B;">${portalUrl}</a></p>
+    <p>Inside the portal, please complete:</p>
+    <ul>
+      <li>onboarding modules</li>
+      <li>certification uploads</li>
+      <li>availability settings</li>
+      <li>service areas</li>
+      <li>payout setup</li>
+    </ul>
+    <p>Your temporary login credentials:</p>
+    <p>Email: ${email}<br>
+    Temporary Password: ${temporaryPassword}</p>
+    <p>We're excited to have you join FORMED.</p>
+    <p>— Rodney Cilien<br>
+    Founder, FORMED</p>
+  `, "Welcome to FORMED");
 }
 
 export function trainerRejected(name: string): string {
