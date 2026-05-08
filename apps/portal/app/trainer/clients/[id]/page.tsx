@@ -10,8 +10,9 @@ import { ArrowLeft, Phone, Mail } from "lucide-react";
 export default async function ClientDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
@@ -27,7 +28,7 @@ export default async function ClientDetailPage({
         session_notes(*)
       )
     `)
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   if (!client) redirect("/trainer/clients");
@@ -80,7 +81,6 @@ export default async function ClientDetailPage({
               </p>
             </div>
           </div>
-          {/* Status — Active instead of approved */}
           <span className={`text-[10px] tracking-widest uppercase font-body px-3 py-1.5 ${
             client.status === "active"
               ? "bg-green-900/40 text-green-300"
@@ -120,7 +120,7 @@ export default async function ClientDetailPage({
             </Link>
           )}
           <Link
-            href={`/trainer/clients/${params.id}/progress`}
+            href={`/trainer/clients/${id}/progress`}
             className="text-[10px] tracking-widest uppercase font-body bg-warm/80 text-ink px-5 py-2.5 hover:bg-warm transition-colors"
           >
             View Progress
@@ -139,15 +139,13 @@ export default async function ClientDetailPage({
         {/* Left — contact + goals */}
         <div className="space-y-5">
 
-          {/* Contact — interactive */}
           <Card>
             <p className="text-[10px] tracking-widest uppercase text-muted mb-4 font-body">
               Contact
             </p>
             <div className="space-y-3">
               {client.email && (
-                
-                <a  href={`mailto:${client.email}`}
+                <a href={`mailto:${client.email}`}
                   className="flex items-center gap-3 text-sm text-ink hover:text-muted transition-colors group"
                 >
                   <Mail size={14} className="text-muted group-hover:text-ink transition-colors" />
@@ -155,8 +153,7 @@ export default async function ClientDetailPage({
                 </a>
               )}
               {client.phone && (
-                
-                 <a href={`tel:${client.phone}`}
+                <a href={`tel:${client.phone}`}
                   className="flex items-center gap-3 text-sm text-ink hover:text-muted transition-colors group"
                 >
                   <Phone size={14} className="text-muted group-hover:text-ink transition-colors" />
@@ -176,7 +173,6 @@ export default async function ClientDetailPage({
             </div>
           </Card>
 
-          {/* Goals */}
           {intake && (
             <Card>
               <p className="text-[10px] tracking-widest uppercase text-muted mb-4 font-body">
@@ -188,10 +184,7 @@ export default async function ClientDetailPage({
                     <p className="text-[10px] text-muted font-body mb-2">Primary Goals</p>
                     <div className="flex flex-wrap gap-1">
                       {intake.primary_goals.map((g: string) => (
-                        <span
-                          key={g}
-                          className="text-[10px] bg-ink text-cream px-2 py-0.5 font-body"
-                        >
+                        <span key={g} className="text-[10px] bg-ink text-cream px-2 py-0.5 font-body">
                           {g}
                         </span>
                       ))}
@@ -224,7 +217,6 @@ export default async function ClientDetailPage({
         {/* Right — sessions */}
         <div className="lg:col-span-2 space-y-6">
 
-          {/* Upcoming */}
           <div>
             <SectionHeader title="Upcoming Sessions" />
             {upcomingSessions.length > 0 ? (
@@ -263,16 +255,12 @@ export default async function ClientDetailPage({
             )}
           </div>
 
-          {/* Session history — clickable with add notes */}
           <div>
             <SectionHeader title="Session History" />
             {pastSessions.length > 0 ? (
               <div className="space-y-2">
                 {pastSessions.slice(0, 8).map((s: any) => (
-                  <div
-                    key={s.id}
-                    className="bg-white border border-stone hover:border-warm transition-colors"
-                  >
+                  <div key={s.id} className="bg-white border border-stone hover:border-warm transition-colors">
                     <div className="flex items-center justify-between gap-4 p-4">
                       <div className="flex items-center gap-4">
                         <div className="text-center w-10">
@@ -308,7 +296,6 @@ export default async function ClientDetailPage({
                       </div>
                     </div>
 
-                    {/* Session notes preview */}
                     {s.session_notes?.[0] && (
                       <div className="border-t border-stone px-4 py-3 grid grid-cols-2 gap-3">
                         {s.session_notes[0].wins_improvements && (
