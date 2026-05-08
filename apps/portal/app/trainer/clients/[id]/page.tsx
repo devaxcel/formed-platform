@@ -120,6 +120,12 @@ export default async function ClientDetailPage({
             </Link>
           )}
           <Link
+            href={`/trainer/clients/${params.id}/progress`}
+            className="text-[10px] tracking-widest uppercase font-body bg-warm/80 text-ink px-5 py-2.5 hover:bg-warm transition-colors"
+          >
+            View Progress
+          </Link>
+          <Link
             href="/trainer/schedule"
             className="text-[10px] tracking-widest uppercase font-body bg-cream/20 text-cream px-5 py-2.5 hover:bg-cream/30 transition-colors border border-cream/20"
           >
