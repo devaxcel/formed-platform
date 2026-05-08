@@ -81,31 +81,34 @@ export default async function TrainerClientsPage() {
                         </p>
                       </div>
                     </div>
-
-                    {/* Quick action buttons */}
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {needsNotes.length > 0 && (
-                        <Link
-                          href={`/trainer/notes/${needsNotes[0].id}`}
-                          className="text-[10px] tracking-widest uppercase font-body bg-amber-600 text-white px-3 py-1.5 hover:bg-amber-700 transition-colors"
-                        >
-                          Add Notes ({needsNotes.length})
-                        </Link>
-                      )}
-                      <Link
-                        href="/trainer/schedule"
-                        className="text-[10px] tracking-widest uppercase font-body border border-stone text-muted px-3 py-1.5 hover:border-warm hover:text-ink transition-colors"
-                      >
-                        Schedule
-                      </Link>
-                      <Link
-                        href={`/trainer/clients/${client.id}`}
-                        className="text-[10px] tracking-widest uppercase font-body bg-ink text-cream px-3 py-1.5 hover:bg-accent transition-colors flex items-center gap-1"
-                      >
-                        View Profile <ChevronRight size={10} />
-                      </Link>
-                    </div>
-                  </div>
+<div className="flex items-center gap-2 flex-wrap">
+  {needsNotes.length > 0 && (
+    <Link
+      href={`/trainer/notes/${needsNotes[0].id}`}
+      className="text-[10px] tracking-widest uppercase font-body bg-amber-600 text-white px-3 py-1.5 hover:bg-amber-700 transition-colors"
+    >
+      Add Notes ({needsNotes.length})
+    </Link>
+  )}
+  <Link
+    href="/trainer/schedule"
+    className="text-[10px] tracking-widest uppercase font-body border border-stone text-muted px-3 py-1.5 hover:border-warm hover:text-ink transition-colors"
+  >
+    Schedule
+  </Link>
+  <Link
+    href={`/trainer/clients/${client.id}/progress`}
+    className="text-[10px] tracking-widest uppercase font-body border border-stone text-muted px-3 py-1.5 hover:border-warm hover:text-ink transition-colors"
+  >
+    Progress
+  </Link>
+  <Link
+    href={`/trainer/clients/${client.id}`}
+    className="text-[10px] tracking-widest uppercase font-body bg-ink text-cream px-3 py-1.5 hover:bg-accent transition-colors flex items-center gap-1"
+  >
+    View Profile <ChevronRight size={10} />
+  </Link>
+</div>
 
                   {/* Next session strip */}
                   {next ? (
