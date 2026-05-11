@@ -246,11 +246,13 @@ const alreadyExists = existingUsers?.users?.find(
 
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    // 3. Update users table
-    await supabase
-      .from("users")
-      .update({ role: "trainer", full_name, phone })
-      .eq("id", userId);
+   // 3. Upsert users table — handles case where trigger hasn't fired yet
+await supabase
+  .from("users")
+  .upsert(
+    { id: userId, email: email.toLowerCase(), role: "trainer", full_name, phone },
+    { onConflict: "id" }
+  );
 
     // 4. Create trainer record
     const { data: trainer, error: trainerError } = await supabase
