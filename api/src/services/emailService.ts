@@ -168,7 +168,7 @@ export async function sendTrainerApproved(
   name: string
 ) {
   const { data, error } = await supabase.auth.admin.generateLink({
-    type:  "recovery",
+    type: "magiclink",
     email: to,
     options: {
       redirectTo: `${PORTAL_URL}/auth/set-password`,
@@ -176,10 +176,12 @@ export async function sendTrainerApproved(
   });
 
   if (error) {
+    console.error("Failed to generate magic link for trainer:", error);
+    // Fallback — send without link, trainer can use forgot password
     await send(
       to,
       "Welcome to FORMED — Start your onboarding",
-      T.trainerApproved(name, PORTAL_URL)
+      T.trainerApproved(name, PORTAL_URL, to, "")
     );
     return;
   }
