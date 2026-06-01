@@ -82,7 +82,7 @@ export default function TrainersPage() {
               Train With FORMED
             </p>
             <h1
-              className="font-display font-light text-cream leading-tight max-w-3xl"
+              className="font-display font-light text-cream leading-tight max-w-[40rem]"
               style={{ fontSize: "clamp(2.5rem, 5.5vw, 5rem)" }}
             >
               You focus on coaching.{" "}
