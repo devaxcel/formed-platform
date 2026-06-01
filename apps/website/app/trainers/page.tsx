@@ -65,7 +65,7 @@ export default function TrainersPage() {
       <Navbar />
       <main>
         {/* Hero */}
-        <section className="relative h-[80vh] min-h-[560px] flex items-end overflow-hidden pt-20 lg:pt-24">
+        <section className="relative h-screen min-h-[640px] flex items-end overflow-hidden">
           <div className="absolute inset-0">
             <Image
               src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1920&auto=format&fit=crop&q=80"
@@ -83,7 +83,7 @@ export default function TrainersPage() {
             </p>
             <h1
               className="font-display font-light text-cream leading-tight max-w-3xl"
-              style={{ fontSize: "clamp(3rem, 7vw, 6rem)" }}
+              style={{ fontSize: "clamp(2.5rem, 5.5vw, 5rem)" }}
             >
               You focus on coaching.{" "}
               <em className="italic font-light text-warm">
