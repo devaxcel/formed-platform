@@ -90,21 +90,40 @@ export default async function TrainerApplicationDetailPage({
 
       {/* Documents */}
       <Card>
-        <p className="text-[10px] tracking-widest uppercase text-muted mb-4 font-body">Documents</p>
+        <p className="text-[10px] tracking-widests uppercase text-muted mb-4 font-body">Documents</p>
         {trainer.trainer_docs?.length > 0 ? (
           <div className="space-y-0 border-t border-stone">
             {trainer.trainer_docs.map((doc: any) => (
-              <div key={doc.id} className="grid grid-cols-3 gap-4 py-3 border-b border-stone last:border-0">
-                <p className="text-xs font-body text-ink capitalize">{doc.doc_type?.replace(/_/g, " ")}</p>
-                <p className="text-xs text-muted font-body">
-                  {doc.expiry_date ? `Expires ${formatDate(doc.expiry_date)}` : "No expiry"}
-                </p>
-                <Badge status={doc.approval_status} />
+              <div key={doc.id} className="py-4 border-b border-stone last:border-0">
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                  <div>
+                    <p className="text-sm font-body font-medium text-ink capitalize">
+                      {doc.doc_type?.replace(/_/g, " ")}
+                    </p>
+                    <p className="text-xs text-muted font-body mt-0.5">
+                      {doc.expiry_date ? `Expires ${formatDate(doc.expiry_date)}` : "No expiry date"} ·{" "}
+                      Uploaded {formatDate(doc.uploaded_at ?? doc.created_at)}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Badge status={doc.approval_status} />
+                    {doc.file_url && (
+                      <a
+                        href={doc.file_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] tracking-widest uppercase font-body border border-stone text-muted px-3 py-1.5 hover:border-warm hover:text-ink transition-colors"
+                      >
+                        View File
+                      </a>
+                    )}
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-muted text-xs font-body">No documents uploaded.</p>
+          <p className="text-muted text-xs font-body">No documents uploaded yet.</p>
         )}
       </Card>
 
