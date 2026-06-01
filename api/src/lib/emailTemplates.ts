@@ -242,27 +242,25 @@ export function trainerApplicationReceived(name: string): string {
 
 export function trainerApproved(name: string, portalUrl: string, email: string, temporaryPassword: string): string {
   return base(`
-    <h1>Welcome to FORMED</h1>
+    <h1>Welcome to FORMED — Complete Your Trainer Onboarding.</h1>
     <p>Hi ${name},</p>
-    <p>Congratulations — your FORMED trainer application has been approved.</p>
-    <p>Your trainer portal is now ready.</p>
-    <p>Access your trainer portal here:<br>
-    <a href="${portalUrl}" style="color:#0C0C0B;">${portalUrl}</a></p>
-    <p>Inside the portal, please complete:</p>
+    <p>Thank you for your interest in becoming a FORMED Trainer.</p>
+    <p>We'd like to invite you to begin the onboarding process.</p>
+    <p>Please create your account and complete the required onboarding steps, including:</p>
     <ul>
-      <li>onboarding modules</li>
-      <li>certification uploads</li>
-      <li>availability settings</li>
-      <li>service areas</li>
-      <li>payout setup</li>
+      <li>Trainer onboarding modules</li>
+      <li>Required agreements</li>
+      <li>Certification verification</li>
+      <li>Document uploads</li>
+      <li>Background screening authorization</li>
     </ul>
-    <p>Your temporary login credentials:</p>
-    <p>Email: ${email}<br>
-    Temporary Password: ${temporaryPassword}</p>
-    <p>We're excited to have you join FORMED.</p>
+    <p>Once all requirements are completed and reviewed, our team will evaluate your application for final approval.</p>
+    <p>Visit your trainer portal to get started:<br>
+    <a href="${portalUrl}/trainer/onboarding" style="color:#0C0C0B;">${portalUrl}/trainer/onboarding</a></p>
+    <p>Welcome to FORMED.</p>
     <p>— Rodney Cilien<br>
     Founder, FORMED</p>
-  `, "Welcome to FORMED");
+  `, "Welcome to FORMED — Complete Your Trainer Onboarding");
 }
 
 export function trainerRejected(name: string): string {
@@ -415,15 +413,24 @@ export function trainerApprovedWithLink(
   portalUrl: string
 ): string {
   return base(`
-    <h1>Welcome to FORMED.</h1>
+    <h1>Welcome to FORMED — Complete Your Trainer Onboarding.</h1>
     <p>Hi ${name},</p>
-    <p>Congratulations — your trainer application has been approved. Set your password to access the FORMED trainer portal and begin your onboarding.</p>
-    <div class="highlight">
-      <p style="margin:0;color:#0C0C0B;">After setting your password, complete the onboarding programme to become active and start receiving client assignments.</p>
-    </div>
+    <p>Thank you for your interest in becoming a FORMED Trainer.</p>
+    <p>We'd like to invite you to begin the onboarding process.</p>
+    <p>Please create your account and complete the required onboarding steps, including:</p>
+    <ul>
+      <li>Trainer onboarding modules</li>
+      <li>Required agreements</li>
+      <li>Certification verification</li>
+      <li>Document uploads</li>
+      <li>Background screening authorization</li>
+    </ul>
+    <p>Once all requirements are completed and reviewed, our team will evaluate your application for final approval.</p>
+    <p>Complete your onboarding below:</p>
     <a href="${passwordLink}" class="btn">Set Your Password</a>
     <p style="margin-top:16px;font-size:12px;color:#8C8880;">This link expires in 24 hours. If it expires, visit <a href="${portalUrl}/auth/forgot-password" style="color:#0C0C0B;">portal.formed.fit</a> to request a new one.</p>
-  `, "Your FORMED trainer application has been approved.");
+    <p>Welcome to FORMED.</p>
+  `, "Welcome to FORMED — Complete Your Trainer Onboarding");
 }
 export function adminNewTrainerApplication(
   trainerName: string,
