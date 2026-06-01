@@ -21,13 +21,12 @@ function PDFViewerModal({ module, onClose, onAccept }: {
   onClose: () => void;
   onAccept: (fullName: string) => Promise<void>;
 }) {
-  const scrollRef            = useRef<HTMLDivElement>(null);
-  const [scrolledToBottom,   setScrolledToBottom]   = useState(false);
-  const [acknowledged,       setAcknowledged]       = useState(false);
-  const [fullName,           setFullName]           = useState("");
-  const [saving,             setSaving]             = useState(false);
+  const scrollRef          = useRef<HTMLDivElement>(null);
+  const [scrolledToBottom, setScrolledToBottom] = useState(false);
+  const [acknowledged,     setAcknowledged]     = useState(false);
+  const [fullName,         setFullName]         = useState("");
+  const [saving,           setSaving]           = useState(false);
 
-  // Check scroll position
   const handleScroll = () => {
     const el = scrollRef.current;
     if (!el) return;
@@ -35,7 +34,7 @@ function PDFViewerModal({ module, onClose, onAccept }: {
     if (atBottom) setScrolledToBottom(true);
   };
 
-  // Also check on mount in case content is short
+  // Check on mount in case content is short enough to not need scrolling
   useEffect(() => {
     handleScroll();
   }, []);
@@ -67,7 +66,7 @@ function PDFViewerModal({ module, onClose, onAccept }: {
           </button>
         </div>
 
-        {/* Scrollable document area — THIS is the scroll container */}
+        {/* Scrollable document area */}
         <div
           ref={scrollRef}
           onScroll={handleScroll}
@@ -76,28 +75,22 @@ function PDFViewerModal({ module, onClose, onAccept }: {
           <h3 className="font-display text-2xl font-light text-ink mb-4">{module.title}</h3>
 
           {module.description && (
-            <p className="text-ink font-body text-sm leading-relaxed mb-4">{module.description}</p>
+            <p className="text-ink font-body text-sm leading-relaxed mb-6 pb-4 border-b border-stone">
+              {module.description}
+            </p>
           )}
 
-          {module.content ? (
-            <div className="text-sm text-ink font-body leading-relaxed whitespace-pre-wrap">
-              {module.content}
-            </div>
-          ) : (
-            <div className="space-y-4 text-sm text-ink font-body leading-relaxed">
-              <p>This module covers the policies and procedures required for all FORMED trainers.</p>
-              <p>Please review all sections carefully before acknowledging and completing this module.</p>
-              <p>As a FORMED trainer, you are expected to uphold the highest standards of professionalism, client care, and platform compliance.</p>
-              <p>Your commitment to these standards ensures a premium experience for every FORMED client and reflects the quality of service we deliver as a brand.</p>
-              <p>Failure to comply with the requirements outlined in this and other onboarding modules may result in restriction or removal from the platform.</p>
-              <p>By completing this module you confirm that you have read, understood, and agree to comply with all requirements outlined in this document.</p>
-              <div className="h-8" />
-              <p className="text-muted text-xs text-center border-t border-stone pt-4">— End of document —</p>
-            </div>
-          )}
+          <div className="text-sm text-ink font-body leading-relaxed whitespace-pre-wrap">
+            {module.content ?? "No content available for this module yet."}
+          </div>
+
+          <div className="h-8" />
+          <p className="text-muted text-xs text-center border-t border-stone pt-4 mt-4">
+            — End of document —
+          </p>
         </div>
 
-        {/* Scroll indicator — shown until scrolled to bottom */}
+        {/* Scroll indicator */}
         {!scrolledToBottom && (
           <div className="flex-shrink-0 bg-white border-t border-stone px-6 py-3 flex items-center justify-center gap-2">
             <ChevronDown size={14} className="text-warm animate-bounce" />
@@ -107,7 +100,7 @@ function PDFViewerModal({ module, onClose, onAccept }: {
           </div>
         )}
 
-        {/* Acknowledgment section — locked until scrolled */}
+        {/* Acknowledgment section */}
         <div className={cn(
           "flex-shrink-0 border-t border-stone px-6 py-5 space-y-4 bg-white transition-opacity duration-300",
           !scrolledToBottom ? "opacity-40 pointer-events-none" : "opacity-100"
@@ -119,7 +112,6 @@ function PDFViewerModal({ module, onClose, onAccept }: {
             </div>
           )}
 
-          {/* Checkbox */}
           <label className="flex items-start gap-3 cursor-pointer">
             <input
               type="checkbox"
@@ -132,7 +124,6 @@ function PDFViewerModal({ module, onClose, onAccept }: {
             </span>
           </label>
 
-          {/* Signature */}
           <div>
             <label className="block text-[10px] tracking-widest uppercase text-muted mb-1.5 font-body">
               Type Your Full Legal Name to Sign
@@ -146,7 +137,6 @@ function PDFViewerModal({ module, onClose, onAccept }: {
             />
           </div>
 
-          {/* Timestamp */}
           <p className="text-[10px] text-muted font-body">
             Timestamp: {new Date().toLocaleString("en-US", {
               timeZone: "America/New_York",
@@ -175,12 +165,14 @@ function DocUploadSection({ trainerId, onAllUploaded }: {
   onAllUploaded: () => void;
 }) {
   const supabase = createClient();
+
   const DOCS = [
-    { key: "drivers_license",   label: "Driver's License",      required: true  },
-    { key: "cpt_certification", label: "CPT Certification",     required: true  },
-    { key: "cpr_aed",           label: "CPR/AED Certification", required: true  },
-    { key: "insurance",         label: "Insurance Certificate", required: false },
+    { key: "government_id", label: "Driver's License / Government ID", required: true  },
+    { key: "certification", label: "CPT Certification",                required: true  },
+    { key: "cpr_aed",       label: "CPR/AED Certification",           required: true  },
+    { key: "insurance",     label: "Insurance Certificate",           required: false },
   ];
+
   const [uploads, setUploads] = useState<Record<string, File>>({});
   const [saving,  setSaving]  = useState(false);
   const [done,    setDone]    = useState(false);
@@ -200,20 +192,42 @@ function DocUploadSection({ trainerId, onAllUploaded }: {
       for (const doc of DOCS) {
         const file = uploads[doc.key];
         if (!file) continue;
+
         const ext  = file.name.split(".").pop();
         const path = `trainer-docs/${trainerId}/${doc.key}.${ext}`;
+
+        // Upload to storage
         const { error: upErr } = await supabase.storage
-          .from("trainer-docs").upload(path, file, { upsert: true });
+          .from("trainer-docs")
+          .upload(path, file, { upsert: true });
         if (upErr) throw upErr;
-        const { data: { publicUrl } } = supabase.storage.from("trainer-docs").getPublicUrl(path);
-        await supabase.from("trainer_docs").upsert({
-          trainer_id: trainerId, doc_type: doc.key,
-          file_url: publicUrl, approval_status: "pending",
-          upload_date: new Date().toISOString(),
-        }, { onConflict: "trainer_id,doc_type" });
+
+        const { data: { publicUrl } } = supabase.storage
+          .from("trainer-docs")
+          .getPublicUrl(path);
+
+        // Delete existing record first to avoid upsert conflict issues
+        await supabase.from("trainer_docs")
+          .delete()
+          .eq("trainer_id", trainerId)
+          .eq("doc_type", doc.key);
+
+        // Insert fresh record
+        const { error: dbErr } = await supabase.from("trainer_docs").insert({
+          trainer_id:      trainerId,
+          doc_type:        doc.key,
+          file_url:        publicUrl,
+          approval_status: "under_review",
+          upload_date:     new Date().toISOString(),
+        });
+        if (dbErr) throw dbErr;
       }
+
+      // Lock trainer account pending admin review
       await supabase.from("trainers")
-        .update({ status: "approved_pending_docs" }).eq("id", trainerId);
+        .update({ status: "approved_pending_docs" })
+        .eq("id", trainerId);
+
       setDone(true);
       onAllUploaded();
     } catch (err: any) {
@@ -227,8 +241,8 @@ function DocUploadSection({ trainerId, onAllUploaded }: {
       <div className="bg-ink p-8 text-center">
         <Check size={28} className="text-cream mx-auto mb-3" />
         <p className="font-display text-2xl font-light text-cream mb-2">Documents Submitted</p>
-        <p className="text-cream/60 text-sm font-body">
-          Your documents are under review. FORMED will notify you once approved.
+        <p className="text-cream/60 text-sm font-body leading-relaxed">
+          Your documents are under review. The FORMED team will notify you once approved.
         </p>
       </div>
     );
@@ -240,16 +254,18 @@ function DocUploadSection({ trainerId, onAllUploaded }: {
         <p className="text-[10px] tracking-widest uppercase text-muted font-body mb-1">Final Step</p>
         <h3 className="font-display text-2xl font-light text-ink mb-1">Upload Your Documents</h3>
         <p className="text-sm text-muted font-body leading-relaxed">
-          Upload the required documents. Your account will be locked for admin review until all docs are approved.
+          Upload the required documents below. Your account will remain under review until all documents are verified.
         </p>
       </div>
+
       <div className="space-y-3">
         {DOCS.map(doc => (
           <div key={doc.key} className="border border-stone p-4 flex items-center justify-between gap-4 flex-wrap">
             <div>
               <p className="text-sm font-body font-medium text-ink">{doc.label}</p>
               <p className="text-[10px] text-muted font-body">
-                {doc.required ? "Required" : "Optional"}{uploads[doc.key] ? ` · ${uploads[doc.key].name}` : ""}
+                {doc.required ? "Required" : "Optional"}
+                {uploads[doc.key] ? ` · ${uploads[doc.key].name}` : ""}
               </p>
             </div>
             <label className="cursor-pointer">
@@ -262,20 +278,29 @@ function DocUploadSection({ trainerId, onAllUploaded }: {
                 {uploads[doc.key] ? <Check size={11} /> : <Upload size={11} />}
                 {uploads[doc.key] ? "Uploaded" : "Choose File"}
               </div>
-              <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png"
-                onChange={handleFile(doc.key)} />
+              <input
+                type="file"
+                className="hidden"
+                accept=".pdf,.jpg,.jpeg,.png"
+                onChange={handleFile(doc.key)}
+              />
             </label>
           </div>
         ))}
       </div>
+
       {error && (
         <div className="flex items-center gap-2 text-red-600 bg-red-50 border border-red-200 px-4 py-3">
           <AlertCircle size={14} />
           <p className="text-xs font-body">{error}</p>
         </div>
       )}
-      <button onClick={handleSubmit} disabled={!requiredDone || saving}
-        className="w-full bg-ink text-cream text-[10px] tracking-widest uppercase font-body py-4 hover:bg-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+
+      <button
+        onClick={handleSubmit}
+        disabled={!requiredDone || saving}
+        className="w-full bg-ink text-cream text-[10px] tracking-widest uppercase font-body py-4 hover:bg-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+      >
         {saving ? "Uploading..." : "Submit Documents for Review"}
       </button>
     </div>
@@ -300,6 +325,7 @@ export default function TrainerOnboardingClient({ trainerId, modules, progress }
   const handleAccept = async (moduleId: string, fullName: string) => {
     const now      = new Date().toISOString();
     const existing = localProgress.find(p => p.module_id === moduleId);
+
     if (existing) {
       await supabase.from("trainer_module_progress").update({
         completed: true, completed_at: now, signature_name: fullName,
@@ -310,13 +336,17 @@ export default function TrainerOnboardingClient({ trainerId, modules, progress }
         completed: true, completed_at: now, signature_name: fullName,
       });
     }
+
     const updated = [
       ...localProgress.filter(p => p.module_id !== moduleId),
       { module_id: moduleId, completed: true, completed_at: now, signature_name: fullName },
     ];
     setLocalProgress(updated);
     setActiveModule(null);
-    const newCount = modules.filter(m => updated.some(p => p.module_id === m.id && p.completed)).length;
+
+    const newCount = modules.filter(m =>
+      updated.some(p => p.module_id === m.id && p.completed)
+    ).length;
     if (newCount === modules.length) setTimeout(() => setShowDocUpload(true), 400);
   };
 
@@ -339,8 +369,10 @@ export default function TrainerOnboardingClient({ trainerId, modules, progress }
       {/* Progress bar */}
       <div className="flex items-center gap-4">
         <div className="flex-1 h-1.5 bg-stone">
-          <div className="h-1.5 bg-ink transition-all duration-700"
-            style={{ width: modules.length > 0 ? `${(completedCount / modules.length) * 100}%` : "0%" }} />
+          <div
+            className="h-1.5 bg-ink transition-all duration-700"
+            style={{ width: modules.length > 0 ? `${(completedCount / modules.length) * 100}%` : "0%" }}
+          />
         </div>
         <span className="text-xs font-body text-muted flex-shrink-0">
           {completedCount} / {modules.length} complete
@@ -371,7 +403,6 @@ export default function TrainerOnboardingClient({ trainerId, modules, progress }
             return (
               <div key={module.id} className="bg-white border border-stone hover:border-warm transition-all">
                 <div className="flex items-start gap-4 p-5">
-                  {/* Step circle */}
                   <div className={cn(
                     "w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5",
                     done ? "bg-ink" : "border border-stone bg-cream"
