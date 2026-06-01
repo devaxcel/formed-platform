@@ -101,11 +101,23 @@ export default function LoginPage() {
     router.push(activeTab.redirect);
   };
 
-  // Read hash on initial load — e.g. /auth/login#trainer
+  // Read hash OR pathname to set tab
+  // /auth/login#trainer OR /trainer/login OR /client/login OR /admin/login
   useEffect(() => {
-    const hash = window.location.hash.replace("#", "") as TabKey;
-    if (["client", "trainer", "admin"].includes(hash)) {
-      setTab(hash);
+    const hash     = window.location.hash.replace("#", "");
+    const pathname = window.location.pathname;
+
+    if (pathname.startsWith("/trainer/login")) {
+      setTab("trainer");
+      window.history.replaceState(null, "", "/trainer/login");
+    } else if (pathname.startsWith("/admin/login")) {
+      setTab("admin");
+      window.history.replaceState(null, "", "/admin/login");
+    } else if (pathname.startsWith("/client/login")) {
+      setTab("client");
+      window.history.replaceState(null, "", "/client/login");
+    } else if (["client", "trainer", "admin"].includes(hash)) {
+      setTab(hash as TabKey);
     }
   }, []);
 
@@ -114,8 +126,13 @@ export default function LoginPage() {
     setError("");
     setEmail("");
     setPassword("");
-    // Update URL hash without page reload
-    window.history.replaceState(null, "", `#${key}`);
+    // Update URL to role-specific path
+    const paths: Record<TabKey, string> = {
+      client:  "/client/login",
+      trainer: "/trainer/login",
+      admin:   "/admin/login",
+    };
+    window.history.replaceState(null, "", paths[key]);
   };
 
   const field = "w-full bg-cream/5 border border-cream/20 text-cream placeholder:text-muted text-sm px-4 py-3 focus:outline-none focus:border-cream/50 transition-colors font-body";
