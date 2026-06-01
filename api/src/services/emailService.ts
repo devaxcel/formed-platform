@@ -62,7 +62,7 @@ export async function sendClientApproved(
   
   await send(
     to,
-    "Welcome to FORMED — Set your password to get started",
+    "Welcome to FORMED — Complete Your Trainer Onboarding",
     T.clientApprovedWithLink(name, data.properties.action_link, PORTAL_URL)
   );
   
@@ -180,7 +180,7 @@ export async function sendTrainerApproved(
     // Fallback — send without link, trainer can use forgot password
     await send(
       to,
-      "Welcome to FORMED — Start your onboarding",
+      "Welcome to FORMED — Complete Your Trainer Onboarding",
       T.trainerApproved(name, PORTAL_URL, to, "")
     );
     return;
@@ -188,7 +188,7 @@ export async function sendTrainerApproved(
 
   await send(
     to,
-    "Welcome to FORMED — Set your password to get started",
+    "Welcome to FORMED — Complete Your Trainer Onboarding",
     T.trainerApprovedWithLink(name, data.properties.action_link, PORTAL_URL)
   );
 }
@@ -296,4 +296,3 @@ export async function sendAdminNewTrainerApplication(
     T.adminNewTrainerApplication(trainerName, trainerEmail, trainerCity, PORTAL_URL)
   );
 }
-
