@@ -43,9 +43,14 @@ export async function updateSession(request: NextRequest) {
   const isAuthPage = path.startsWith("/auth") || isRoleLogin;
 
   // Not logged in + trying to access protected route → login
-  if (!user && isProtected) {
-    return NextResponse.redirect(new URL("/auth/login", request.url));
-  }
+// Not logged in + trying to access protected route → role-specific login
+if (!user && isProtected) {
+  if (path.startsWith("/trainer"))
+    return NextResponse.redirect(new URL("/trainer/login", request.url));
+  if (path.startsWith("/admin"))
+    return NextResponse.redirect(new URL("/admin/login", request.url));
+  return NextResponse.redirect(new URL("/client/login", request.url));
+}
 
   // Logged in + on auth page → redirect to correct portal
   if (user && isAuthPage) {
