@@ -101,8 +101,7 @@ export default async function TrainerApplicationDetailPage({
                       {doc.doc_type?.replace(/_/g, " ")}
                     </p>
                     <p className="text-xs text-muted font-body mt-0.5">
-                      {doc.expiry_date ? `Expires ${formatDate(doc.expiry_date)}` : "No expiry date"} ·{" "}
-                      Uploaded {formatDate(doc.uploaded_at ?? doc.created_at)}
+                      {doc.expiry_date ? `Expires ${formatDate(doc.expiry_date)}` : "No expiry date"}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
