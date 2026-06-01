@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #F5F2EC;
+  color: #0C0C0B;
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+/* Hover states for clickable rows */
+a > div[class*="border-stone"] {
+  transition: border-color 0.15s ease;
+}
+a > div[class*="border-stone"]:hover {
+  border-color: var(--warm, #C8C2B4);
+}
+::selection { background: #0C0C0B; color: #F5F2EC; }
+
+::-webkit-scrollbar       { width: 4px; }
+::-webkit-scrollbar-track { background: #F5F2EC; }
+::-webkit-scrollbar-thumb { background: #C8C2B4; border-radius: 2px; }
+
+@layer utilities {
+  .fade-up {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+  .delay-1 { animation-delay: 0.05s; }
+  .delay-2 { animation-delay: 0.1s; }
+  .delay-3 { animation-delay: 0.15s; }
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
