@@ -27,12 +27,20 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
 
-  const isProtected =
-    path.startsWith("/dashboard") ||
-    path.startsWith("/trainer") ||
-    path.startsWith("/admin");
+  // Role-specific login pages — must NOT be treated as protected
+  const isRoleLogin =
+    path === "/client/login" ||
+    path === "/trainer/login" ||
+    path === "/admin/login";
 
-  const isAuthPage = path.startsWith("/auth");
+  const isProtected =
+    !isRoleLogin && (
+      path.startsWith("/dashboard") ||
+      path.startsWith("/trainer") ||
+      path.startsWith("/admin")
+    );
+
+  const isAuthPage = path.startsWith("/auth") || isRoleLogin;
 
   // Not logged in + trying to access protected route → login
   if (!user && isProtected) {
