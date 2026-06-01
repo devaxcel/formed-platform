@@ -79,22 +79,11 @@ function PDFViewerModal({ module, onClose, onAccept }: {
             <p className="text-ink font-body text-sm leading-relaxed mb-4">{module.description}</p>
           )}
 
-          {module.content ? (
-            <div className="text-sm text-ink font-body leading-relaxed whitespace-pre-wrap">
-              {module.content}
-            </div>
-          ) : (
-            <div className="space-y-4 text-sm text-ink font-body leading-relaxed">
-              <p>This module covers the policies and procedures required for all FORMED trainers.</p>
-              <p>Please review all sections carefully before acknowledging and completing this module.</p>
-              <p>As a FORMED trainer, you are expected to uphold the highest standards of professionalism, client care, and platform compliance.</p>
-              <p>Your commitment to these standards ensures a premium experience for every FORMED client and reflects the quality of service we deliver as a brand.</p>
-              <p>Failure to comply with the requirements outlined in this and other onboarding modules may result in restriction or removal from the platform.</p>
-              <p>By completing this module you confirm that you have read, understood, and agree to comply with all requirements outlined in this document.</p>
-              <div className="h-8" />
-              <p className="text-muted text-xs text-center border-t border-stone pt-4">— End of document —</p>
-            </div>
-          )}
+         <div className="text-sm text-ink font-body leading-relaxed whitespace-pre-wrap">
+  {module.content ?? module.description ?? "No content available for this module yet."}
+</div>
+<div className="h-8" />
+<p className="text-muted text-xs text-center border-t border-stone pt-4 mt-4">— End of document —</p>
         </div>
 
         {/* Scroll indicator — shown until scrolled to bottom */}
