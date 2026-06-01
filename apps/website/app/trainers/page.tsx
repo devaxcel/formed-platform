@@ -65,7 +65,7 @@ export default function TrainersPage() {
       <Navbar />
       <main>
         {/* Hero */}
-        <section className="relative h-[80vh] min-h-[560px] flex items-end overflow-hidden">
+        <section className="relative h-[80vh] min-h-[560px] flex items-end overflow-hidden pt-20 lg:pt-24">
           <div className="absolute inset-0">
             <Image
               src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1920&auto=format&fit=crop&q=80"
