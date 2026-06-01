@@ -35,7 +35,7 @@ function SetPasswordForm() {
         console.log("Token type:", type);
         console.log("Access token exists:", !!access_token);
         
-        if (access_token && type === 'recovery') {
+        if (access_token && (type === 'recovery' || type === 'magiclink' || type === 'signup')) {
           // Set the session from the token
           const { data, error } = await supabase.auth.setSession({
             access_token,
