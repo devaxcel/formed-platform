@@ -125,14 +125,12 @@ export async function sendClientSessionReminder(
   to: string,
   name: string,
   trainerName: string,
-  sessionDate: string,
-  sessionTime: string,
-  location: string
+  sessionTime: string
 ) {
   await send(
     to,
     `Reminder: Session tomorrow at ${sessionTime}`,
-    T.clientSessionReminder(name, trainerName, sessionDate, sessionTime, location, PORTAL_URL)
+    T.clientSessionReminder(name, trainerName, sessionTime)
   );
 }
 

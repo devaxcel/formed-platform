@@ -40,9 +40,7 @@ export async function sendSessionReminders() {
       client.email,
       client.full_name,
       trainer.full_name,
-      sessionDate,
-      sessionTime,
-      session.location_notes ?? "Your registered address"
+      sessionTime
     );
   }
 
